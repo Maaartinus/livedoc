@@ -27,7 +27,7 @@ function getTemplate() {
                     <div class="input-field">
                         <input id="search" autocomplete="off" type="search" placeholder="search by tag" title="Use - prefix to exclude unwanted tags. Ex: -POST" required v-model="filterByTag" @keyup.enter="$event.target.blur()">
                         <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                        <i class="material-icons">close</i>
+                        <i class="material-icons" @click="clearSearch()">close</i>
                     </div>
                 </div>
                 <div class="navButtonContainerR">
@@ -434,6 +434,10 @@ function getTemplate() {
                 }
                 , toggleDesription: function(){
                     this.hideDescription = !this.hideDescription;
+                }
+                , clearSearch: function(){
+                    this.appData.search = '';
+                    this.filterByTag = '';
                 }
                 ,setAllVisible: function(bool){
 
