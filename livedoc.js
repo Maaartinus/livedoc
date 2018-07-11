@@ -54,7 +54,7 @@ function getTemplate() {
                     __CONTAINER_SUMMARY_PLACEHOLDER__
                     <div v-for="(value,key) in metadata"><span class="bold">{{key}}</span><span class="grey-text text-darken-1">: </span><span class="grey-text text-darken-1" v-html="value"></span></div>
                     <div v-if="getAllTags.length > 0" class="pad-top">
-                    <span class="bold">Available Tags: </span><span class="pointer blue-text text-lighten-1" v-for="(tag, index) in getAllTags" @click="addToSearch(tag)">{{index===getAllTags.length-1? tag:tag+", "}}</span>
+                    <span class="bold">Tags: </span><span :class="[tag.visible ? 'pointer blue-text text-lighten-1' : '']" v-for="(tag, index) in getAllTags" @click="addToSearch(tag.tag)">{{index===getAllTags.length-1? tag.tag:tag.tag+", "}}</span>
                     </div>
                 </div>
             </div>
@@ -318,7 +318,7 @@ function getTemplate() {
                                         }
                                     }
                                 }
-                                
+
                                 if(!matched && !visible && mustHaveTags.size > 0){
                                     visible = true;
                                     for(var musthavetag of mustHaveTags){
@@ -341,26 +341,24 @@ function getTemplate() {
                 , getAllTags: function(){
 
                     var result = {};
+                    var visible = false;
                     for(var i=0;i<this.apis.length;i++){
-                        if(!this.apis[i].visible){
-                            continue;
-                        }
                         var api = this.apis[i];
                         for(var j=0;j<api.methods.length;j++){
-                            if(!api.methods[j].visible){
-                                continue;
-                            }
+                            var visible = this.apis[i].visible && api.methods[j].visible;
                             var method = api.methods[j];
                             if(!method.tags){
                                 break;
                             }
                             for(var k=0;k<method.tags.length;k++){
-                                result[method.tags[k]] = null;
+                                result[method.tags[k]] = visible || !!result[method.tags[k]];
                             }
                         }
                     }
 
-                    return Object.keys(result).sort();
+                    return Object.keys(result).sort().map(function(k){
+                        return {tag:k, visible:result[k]};
+                    })
                 }
                 , userAgent: function(){
                     return navigator.userAgent;
@@ -387,7 +385,7 @@ function getTemplate() {
                     }
                     keyword = \`"\${keyword}"\`;
                     var tags = this.tokenizeSearchText(this.appData.search);
-                    
+
                     var keyword_pos = tags.indexOf(keyword);
                     if(keyword_pos !== -1){
                         tags.splice(keyword_pos,1);
@@ -890,9 +888,9 @@ function getTemplate() {
                     var token;
 
                     for(var i=0;i<txt.length;i++){
-                       
+
                         if(txt[i] === " ") {
-                            
+
                             if(in_quote) {
                                 continue;
                             }
@@ -1137,7 +1135,7 @@ function makeNoIcon(html, callback) {
 }
 
 function escapeSpecialReplacementPatterns(str) {
-    
+
     /* | Pattern | Inserts                                                                  |
      * |------------------------------------------------------------------------------------|
      * |   $$    | Inserts a "$"                                                            |
@@ -1145,7 +1143,7 @@ function escapeSpecialReplacementPatterns(str) {
      * |   $`	 | Inserts the portion of the string that precedes the matched substring.   |
      * |   $'	 | Inserts the portion of the string that follows the matched substring.    |
      * |   $n	 | Where n is a positive integer less than 100, inserts the nth             |
-     * |         | parenthesized submatch string, provided the first argument was a RegExp  | 
+     * |         | parenthesized submatch string, provided the first argument was a RegExp  |
      * |         | object. Note that this is 1-indexed.                                     |
      * --------------------------------------------------------------------------------------
      * SEE https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_string_as_a_parameter
