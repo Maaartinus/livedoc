@@ -50,9 +50,12 @@ function getTemplate() {
         <div class="container">
             <div class="section">
                 <h1 class="grey-text text-darken-3">{{name}}</h1>
-                <div class="indent">
+                <div class="pointer blue-text text-lighten-1" @click="toggleDesription()">{{hideDescription ? "Expand" : "Collapse"}}</div>
+                <div class="indent" v-if="!hideDescription">
                     __CONTAINER_SUMMARY_PLACEHOLDER__
                     <div v-for="(value,key) in metadata"><span class="bold">{{key}}</span><span class="grey-text text-darken-1">: </span><span class="grey-text text-darken-1" v-html="value"></span></div>
+                </div>
+                <div class="indent">
                     <div v-if="getAllTags.length > 0" class="pad-top">
                     <span class="bold">Tags: </span><span :class="[tag.visible ? 'pointer blue-text text-lighten-1' : '']" v-for="(tag, index) in getAllTags" @click="addToSearch(tag.tag)">{{index===getAllTags.length-1? tag.tag:tag.tag+", "}}</span>
                     </div>
@@ -428,6 +431,9 @@ function getTemplate() {
                     for(var i=0;i<this.apis.length;i++){
                         this.apis[i].showMe = bool;
                     }
+                }
+                , toggleDesription: function(){
+                    this.hideDescription = !this.hideDescription;
                 }
                 ,setAllVisible: function(bool){
 
@@ -977,6 +983,7 @@ function initContainer() {
             , showConsole: false
         }
         , apis: []
+        , hideDescription: false
     };
 }
 
