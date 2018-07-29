@@ -57,7 +57,7 @@ function getTemplate() {
                 </div>
                 <div class="indent">
                     <div v-if="getAllTags.length > 0" class="pad-top">
-                    <span class="bold">Tags: </span><span :class="[tag.visible ? 'pointer blue-text text-lighten-1' : '']" v-for="(tag, index) in getAllTags" @click="addToSearch(tag.tag)">{{index===getAllTags.length-1? tag.tag:tag.tag+", "}}</span>
+                    <span class="bold">Tags: </span><span :class="[tag.visible ? 'pointer blue-text text-lighten-1' : '']" v-for="(tag, index) in getAllTags" @click="tag.visible && addToSearch(tag.tag)">{{index===getAllTags.length-1? tag.tag:tag.tag+", "}}</span>
                     </div>
                 </div>
             </div>
